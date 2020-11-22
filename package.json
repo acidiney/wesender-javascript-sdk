@@ -1,5 +1,5 @@
 {
-  "name": "acidiney/wesender",
+  "name": "wesenderjs",
   "version": "1.0.0",
   "description": "SDK para conexão com a API em javascript",
   "main": "index.js",

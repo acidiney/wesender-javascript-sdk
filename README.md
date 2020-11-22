@@ -1,23 +1,29 @@
 # WeSender SDK para Javascript
-  SDK para conexão com a API em javascript
+
+SDK para conexão com a API em javascript
 
 **A chave da api deve ser passada na instância da classe, como construtor**
 
 `npm i wesenderjs`
 
 ## Métodos diponiveis no momento
+
 ### - sendMessage
+
 Esse metodo recebe um `payload` com as informações que devem ser enviadas e para quem deve ser enviado.
- ```js
+
+```js
 
 payload: {
-  destine: Array,
-  message: String,
-  hasSpecialCharacter: Boolean // opcional, by default is false
+ destine: Array,
+ message: String,
+ hasSpecialCharacter: Boolean // opcional, by default is false
 }
 
- ```
+```
+
 Resposta do método é a mesma que a da API:
+
 ```js
 
 {
@@ -40,39 +46,38 @@ Resposta do método é a mesma que a da API:
 - Usando arquivo
 
 ```html
-
- <script src="dist/wesender.sdk.js"></script>
- <script>
+<script src="dist/wesender.sdk.js"></script>
+<script>
   const apikey = 'Valid api Key';
-  const WSDK = new WeSenderSDK(apikey)
-  const payload = {
-    destine: [
-    '920000000'
-    ],
-    message:'Olá Mundo do sdk',
-  }
-  WSDK.sendMessage(payload)
-</script>
+  const WSDK = new WeSenderSDK();
 
+  WSDK.setApiKey(apiKey)
+    .setDestinies([940000000, 900000000]) // Multiplos
+    .setMessage('Olá WeSender')
+    .setSpecialCharacters()
+    .send();
+
+  // ou
+  WSDK.setApiKey(apiKey)
+    .setDestine(900000000) // único
+    .setMessage('Olá WeSender')
+    .setSpecialCharacters()
+    .send();
+</script>
 ```
 
 - NPM
 
 ```ts
   import WeSenderSDK from 'wesenderjs'
-  
+
   main () {
     const apikey = 'Valid api Key';
-    const WSDK = new WeSenderSDK(apikey)
-    const payload = {
-      destine: [
-        '920000000'
-      ],
-      message:'Olá Mundo do sdk',
-    }
-    
-    WSDK.sendMessage(payload)
-  
+    WSDK.setApiKey(apiKey)
+    .setDestine(900000000) // único
+    .setMessage('Olá WeSender')
+    .setSpecialCharacters()
+    .send();
   }
 ```
 
@@ -90,5 +95,7 @@ Depois que o merge da sua pull request for feito, você pode apagar a sua branch
 Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
 
 ---
+
 ## Autor
+
 [Acidiney Dias](mailto:mailto:acidiney.dias@digitalfactory.co.ao)
