@@ -1,46 +1,96 @@
 const axios = require('axios')
 /**
  * @description A javascript sdk to WeSender api
- * @requires fetch - A browser method, this can't run on node mode, use wesender.sdk module instead
- * @license MTI
- * @host https://www.wesender.co.ao
- * @version 0.1.beta
+ * @license MIT
+ * @version 1.0.0
  * @author Acidiney Dias <acidineydias@gmail.com>
  */
 class WeSenderSDK {
-  /**
-   * @param {String} apiKey 
-   */
-  constructor (apiKey) {
-    this._url = 'https://api.wesender.co.ao/';
-    this._apiKey = apiKey;
+  constructor() {
+    this._url = process.env.API_URL;
+    this._apiKey = '';
+    this._destinies = [];
+    this._message = '';
+    this._hasSpecialCharacters = false;
   }
 
   /**
-   * @param { Object } payload
-   * @param { Array } destine
-   * @param { String } message
-   * @param { Boolean } hasSpecialCharacters
+   * set apiKey
+   * @param {string} apiKey 
    */
-  async sendMessage ({ destine, message, hasSpecialCharacters = false }) {
-    const route = 'envio/apikey';  
-    const fullPath = this._url + route;
+  setApiKey(apiKey) {
+    this._apiKey = apiKey.trim();
+    return this;
+  }
 
-    const data = {
+  get showApiKey() {
+    return this._apiKey;
+  }
+
+  /**
+   * set a list of destinies
+   * @param {object[]} destinies 
+   * 
+   * @throws { Error }
+   */
+  setDestinies(destinies) {
+    if (!(destinies instanceof Array)) throw new Error('Destinies need to be an array of contact numbers');
+
+    this._destinies = destinies;
+    return this;
+  }
+
+  /**
+   * @param { number|string } destine
+   * 
+   * @throws { Error }
+   */
+  setDestine(destine) {
+    if (destine instanceof Array) throw new Error('Destine need to be a contact number');
+
+    this._destinies.push(destine);
+    return this;
+  }
+
+  get destinies() {
+    return this._destinies;
+  }
+
+  /**
+   * 
+   * @param {string} message 
+   */
+  setMessage(message) {
+    this._message = message.trim();
+    return this;
+  }
+
+  get message() {
+    return this._message;
+  }
+
+  setSpecialCharacters() {
+    this._hasSpecialCharacters = true;
+    return this;
+  }
+
+  transformRequestPayload() {
+    return {
       ApiKey: this._apiKey,
-      Destino: destine,
-      Mensagem: message,
-      CEspeciais: hasSpecialCharacters
+      Destino: this._destinies,
+      Mensagem: this._message,
+      CEspeciais: this._hasSpecialCharacters,
     }
+  }
+
+  async send() {
+    const payload = this.transformRequestPayload()
 
     try {
-      const sendResponse = await axios.post(fullPath, data)
-      return sendResponse.data
+      const { data } = await axios.post(this._url, payload)
+      return data
     } catch (e) {
-      return {
-        Exito: false,
-        Mensagem: 'Não foi possivel enviar messagem, verifique o seu apikey'
-      };
+      throw new Error(e.response.data.Message)
     }
   }
 }
